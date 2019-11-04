@@ -1,0 +1,467 @@
+三数之和
+给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？找出所有满足条件且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/3sum给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？找出所有满足条件且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/3sum
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(nums.length < 3) return res;
+        Arrays.sort(nums);
+        for(int i = 0 ; i < nums.length-2;i++){
+            if(nums[i] >0) break;
+            if(i>0&&nums[i] == nums[i-1]) continue;
+            int Left = i+1;
+            int Right = nums.length-1;
+            while(Left < Right){
+                int sum = nums[i] + nums[Left] + nums[Right];
+                if(sum == 0){
+                    res.add(Arrays.asList(nums[i],nums[Left],nums[Right]));
+                    while(Left<Right&&nums[Left+1] == nums[Left]) Left++;
+                    while(Left<Right&&nums[Right-1] == nums[Right]) Right--;
+                    Left++;
+                    Right--;
+                } else{
+                    if(sum > 0){
+                        Right--;
+                    } 
+                    if(sum < 0){
+                        Left++;
+                    }
+                }
+            }
+        }
+        return res;
+        
+    }
+}
+电话号码的字母组合
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+class Solution {
+    public List<String> letterCombinations(String digits) {
+        if(digits.length() == 0) return new ArrayList<>();
+        List<String> res = new ArrayList<>();
+        char[] digitArr = digits.toCharArray();
+        StringBuilder builder = new StringBuilder();
+        permutate(digitArr,0,builder,res);
+        return res;
+    }
+    private void permutate(char[] digits,int iter,StringBuilder builder,List<String> list){
+        if(iter == digits.length) {
+            list.add(builder.toString());
+            return;}
+        //这里不能用 val = (int)digits[iter] 或 Integer.valueOf(digits[iter]) 这样得到的整数值为ascii码
+        int val = Character.getNumericValue(digits[iter]);
+        int range = 3;
+        if(val==7||val==9) range = 4;
+        for(int i = 0; i < range ; i++){
+            int asc = 97+(val-2)*3+i;
+            if(val == 8)  asc = 116 + i;
+            if(val == 9)  asc = 119 + i;
+            char temp = (char)asc;
+            builder.append(temp);
+            permutate(digits,iter+1,builder,list);
+            //回溯
+            builder.deleteCharAt(builder.length()-1);
+        }
+            
+    }
+}
+ 四数之和
+ 给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/4sum
+import java.util.*;
+class Solution {
+    //三数之和加一套循环 O（n3）
+public List<List<Integer>> fourSum(int[] nums, int target) {
+		List<List<Integer>> ret = new ArrayList<>();
+ 
+		if (nums == null || nums.length < 3)
+			return ret;
+		int len = nums.length;
+		Arrays.sort(nums);
+		// 注意，对于 num[i]，寻找另外两个数时，只要从 i+1 开始找就可以了。
+		// 这种写法，可以避免结果集中有重复，因为数组时排好序的，
+		// 所以当一个数被放到结果集中的时候，其后面和它相等的直接被跳过。
+		for (int i = 0; i < len; i++) {
+			// 避免重复！！！！
+			if (i > 0 && nums[i] == nums[i - 1])
+				continue;
+			for (int j = i + 1; j < len; j++) {
+				// 注意j
+				if (j > i + 1 && nums[j] == nums[j - 1])
+					continue;
+				// 往后找，避免重复
+				int begin = j + 1;
+				int end = len - 1;
+				while (begin < end) {
+					int sum = nums[i] + nums[j] + nums[begin] + nums[end];
+					if (sum == target) {
+						List<Integer> list = new ArrayList<>();
+						list.add(nums[i]);
+						list.add(nums[j]);
+						list.add(nums[begin]);
+						list.add(nums[end]);
+						ret.add(list);
+						begin++;
+						end--;
+						// 避免重复！！！！
+						while (begin < end && nums[begin] == nums[begin - 1])
+							begin++;
+						while (begin < end && nums[end] == nums[end + 1])
+							end--;
+					} else if (sum > target)
+						end--;
+					else
+						begin++;
+				}
+			}
+		}
+		return ret;
+	}
+}
+括号生成
+给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
+
+例如，给出 n = 3，生成结果为：
+
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/generate-parentheses
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+import java.util.List;
+import java.util.ArrayList;
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<>();
+        Stack<String> stack = new Stack<>();
+        if(n == 1){ 
+            res.add("()");
+            return res;
+        }
+        permutate("",n,n,res);
+        return res;
+    }
+    private void permutate(String item,int left,int right,List<String> list){
+        if(left == 0 && right == 0){
+            list.add(item);
+            return;
+        }
+        if(left > 0){
+            permutate(item+"(",left-1,right,list);
+        }
+        if(left < right){
+            permutate(item+")",left,right-1,list);
+        }
+    }
+}
+两两交换链表中的节点
+给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    /*递归*/
+    public ListNode swapPairs(ListNode head){
+        if(head == null|| head.next == null){
+            return head;
+        }
+        ListNode next = head.next;
+        head.next = swapPairs(next.next);
+        next.next = head;
+        return next;
+    }
+    /*非递归*/
+    /*
+    public ListNode swapPairs(ListNode head){
+        ListNode dummyHead = new ListNode(-1);
+        dummyHead.next = head;
+        ListNode iter = dummyHead;
+        while(iter.next!=null&&iter.next.next!=null){
+            ListNode start = iter.next;
+            ListNode end = iter.next.next;
+            iter.next = end;
+            start.next = end.next;
+            end.next = start;
+            iter = start;
+        }
+        return dummyHead.next;
+    }
+    */
+    /*
+    public ListNode swapPairs(ListNode head){
+        ListNode dummyHead = new ListNode(-1);
+        dummyHead.next = head;
+        if(head.next == null) return head;
+        ListNode node = head.next;
+        if(node.next == null){
+            node.next = dummyHead.next;
+            return node;
+        }
+        ListNode temp = node.next;
+        node.next = dummyHead.next;
+        ListNode iter = node.next;
+        ListNode nextNode = null;
+        ListNode tp = null;
+        while(iter != null){
+            if(temp==null) break;
+            iter.next = temp;
+            if(temp.next==null)break;
+            nextNode = temp.next;
+            tp = temp.next.next;
+            nextNode.next = iter.next;
+            iter.next = nextNode;
+            iter = iter.next;
+            temp = tp;
+        }
+        return node;
+    }*/
+    /*
+    public ListNode swapPairs(ListNode head) {
+        int len = 0;
+        ListNode iter = head;
+        while(iter!=null){
+            len++;
+            iter = iter.next;
+        }
+        if(len <= 1) return head;
+        ListNode[] list = new ListNode[len];
+        iter = head;
+        for(int i = 0 ; i < list.length ; i++){
+            list[i] = iter;
+            iter = iter.next;
+        }
+        ListNode memmory = null;
+        for(int i = 0; i < len ; i++){
+            if((i+1)%2 != 0){
+                if(i == len - 1) continue;
+                memmory = list[i];
+                if(i+3 < len){
+                    list[i].next = list[i+3];
+                } else if(i+2 == len-1){
+                    list[i].next = list[len-1];
+                }
+            } else{
+                list[i].next = memmory;
+            }
+        }
+        return head;
+    }
+    */
+}
+实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+
+必须原地修改，只允许使用额外常数空间。
+
+以下是一些例子，输入位于左侧列，其相应输出位于右侧列。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/next-permutation
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+class Solution {
+    public void nextPermutation(int[] nums) {
+        int iter = -1;
+        for(int i = 0 ; i < nums.length-1; i++){
+            if(nums[i] < nums[i+1]) iter = i;
+        }
+        if(iter == -1) {
+            Arrays.sort(nums);
+            return;
+        }
+        int rIter = -1;
+        int secondValue = Integer.MAX_VALUE;
+        for(int i = iter+1; i < nums.length ; i++){
+            if(nums[i] > nums[iter]){
+                if(nums[i] < secondValue){
+                    rIter = i;
+                    secondValue = nums[i];
+                }
+            }
+        }
+        if(rIter != -1){
+            int temp = nums[iter];
+            nums[iter] = nums[rIter];
+            nums[rIter] = temp;
+            Arrays.sort(nums,iter+1,nums.length);
+        }
+        return;
+    }
+}
+数独
+判断一个 9x9 的数独是否有效。只需要根据以下规则，验证已经填入的数字是否有效即可。
+
+数字 1-9 在每一行只能出现一次。
+数字 1-9 在每一列只能出现一次。
+数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/valid-sudoku
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+class Solution {
+    //建表暴力搜索O(n2) 17ms
+    public boolean isValidSudoku(char[][] board) {
+        int row = 9;
+        int cube = 3;
+        Map<Integer,Character> map = new HashMap<>();
+        for(int i = 0; i < board.length; i++){
+            for(int j =0; j < board[0].length; j++){
+                if(board[i][j] != '.'){
+                    map.put(i*row+j,board[i][j]);
+                }
+            }
+        }
+        Set<Integer> set = map.keySet();
+        for(Integer iter : set){
+            int currentRow = iter/row;
+            int currentColumn = iter%row;
+            int currentCubeRow = currentRow/cube;
+            int currentCubeColumn = (currentColumn)/cube;
+            //检查所处行
+            for(int i = 0 ; i < 9; i++){
+                int loc = currentRow*row + i;
+                if(loc!=iter&&map.containsKey(loc)){
+                    if(map.get(loc) == map.get(iter)) {
+                        System.out.println("row");
+                        return false;}
+                }
+            }
+            //检查所在列
+            for(int i = 0 ; i < 9 ; i++){
+                int loc = currentColumn + i*9;
+                if(loc!=iter&&map.containsKey(loc)){
+                    if(map.get(loc) == map.get(iter)) {
+                        System.out.println("column");
+                        return false;}
+                }
+            }
+            //检查所在宫
+            for(int i = 0; i < 9 ; i++){
+                int inCubeRow = i/3;
+                int inCubeColumn = i%3;
+                int loc = (currentCubeRow*3+inCubeRow)*9+currentCubeColumn*3+inCubeColumn;
+                if(loc!=iter&&map.containsKey(loc)){
+                    if(map.get(loc) == map.get(iter)) {
+                        System.out.println(iter);
+                        System.out.println(loc);
+                        System.out.println("cube");
+                        return false;}
+                }
+            }
+        }
+        return true;
+    }
+}
+全排列
+给定一个没有重复数字的序列，返回其所有可能的全排列。
+输入: [1,2,3]
+输出:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/permutations
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+import java.util.List;
+import java.util.ArrayList;
+class Solution {
+    //1ms 官方题解 O(N!)
+    public List<List<Integer>> permute(int[] nums){
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> nums_list = new ArrayList<>();
+        for(int num : nums){
+            nums_list.add(num);
+        }
+        permuteAll(nums.length,res,nums_list,0);
+        return res;
+    }
+    private void permuteAll(int len,List<List<Integer>> res, List<Integer> nums, int iter){
+        if(iter == len){
+            res.add(new ArrayList<>(nums));
+            return;
+        }
+        for(int i = iter ; i < nums.size() ; i++){
+            Collections.swap(nums,i,iter);
+            permuteAll(len,res,nums,iter+1);
+            Collections.swap(nums,i,iter);
+        }
+    }
+    /* 15ms 自己写...
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> unit = new ArrayList<>();
+        permuteAll(nums,0,res,unit);
+        return res;
+    }
+    private void permuteAll(int[] nums,int iter,List<List<Integer>> res, List<Integer> unit){
+        if(iter == nums.length){
+            System.out.println("test");
+            res.add(new ArrayList<>(unit));
+            return;
+        }
+        for(int i = 0 ; i < nums.length; i++){
+            if(nums[i] != Integer.MIN_VALUE){
+                unit.add(nums[i]);
+                int temp = nums[i];
+                nums[i] = Integer.MIN_VALUE;
+                permuteAll(nums,iter+1,res,unit);
+                nums[i] = temp;
+                unit.remove(unit.size()-1);
+            }
+        }
+    }
+    */
+}
