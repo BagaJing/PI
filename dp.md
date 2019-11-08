@@ -1,7 +1,11 @@
 # DP
 [预测玩家(自下向上)](#1)
+
 [最长的斐波那契子序列的长度(哈希+dp)](#2)
+
 [最长上升子序列](#3)
+
+[硬币兑换(自下向上)](#4)
 <h3 id="1">预测玩家(DP)</h3>
 给定一个表示分数的非负整数数组。 玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
 
@@ -186,3 +190,40 @@ class Solution {
     */
 }
 ```
+<h3 id="4">硬币兑换</h3>
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+示例 1:
+
+输入: coins = [1, 2, 5], amount = 11
+输出: 3 
+解释: 11 = 5 + 5 + 1
+示例 2:
+
+输入: coins = [2], amount = 3
+输出: -1
+说明:
+你可以认为每种硬币的数量是无限的。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/coin-change
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+```Java
+class Solution {
+    //动态规划 从下而上 计数
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount+1];
+        //初始化dp
+        Arrays.fill(dp,amount+1);
+        dp[0] = 0;
+        for(int i = 1; i <= amount; i++){
+            for(int j = 0; j < coins.length ; j++){
+                if(coins[j]<=i)
+                    dp[i] = Math.min(dp[i],dp[i-coins[j]]+1);
+            }
+        }
+        return dp[amount] > amount? -1:dp[amount];
+    }
+}
+```
+<h3 id="5"></h3>
