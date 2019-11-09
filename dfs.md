@@ -1,6 +1,8 @@
 # DFS
 * [1 钥匙和房间(DFS)](#1)
 * [2 字典序排数(DFS)](#2)
+* [字符串解码(栈)](#3)
+* [岛屿数量](#4)
 <h3 id="1"> 1. 钥匙和房间(DFS)</h3>
 有 N 个房间，开始时你位于 0 号房间。每个房间有不同的号码：0，1，2，...，N-1，并且房间里可能有一些钥匙能使你进入下一个房间。
 
@@ -91,3 +93,125 @@ class Solution {
         }
     }
 }
+```
+<h3 id="3">字符串解码</h3>
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+
+示例:
+
+s = "3[a]2[bc]", 返回 "aaabcbc".
+s = "3[a2[c]]", 返回 "accaccacc".
+s = "2[abc]3[cd]ef", 返回 "abcabccdcdcdef".
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/decode-string
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+```Java
+class Solution {
+    
+    public String decodeString(String s) {
+        char[] arrs = s.toCharArray();
+        StringBuilder str = new StringBuilder();
+        String res = "";
+        //用来获取每个重复次数的的temp变量
+        int num = 0;
+        //用来保存外层的重复次数，每次弹出最里层数字
+        Stack<Integer> counts = new Stack<>();
+        //用来保存外层的字符串，当碰到新数字时被推入，当碰到']'时被弹出来连接括号里的字符串
+        Stack<String> subs = new Stack<>();
+        for(int i = 0 ; i < arrs.length; i++){
+            if(Character.isDigit(arrs[i])){
+                if(arrs[i+1]=='['){
+                num = num*10 + Character.getNumericValue(arrs[i]);
+                counts.push(num);
+                num = 0;
+                subs.push(str.toString());
+                //清空str来记录下一层括号里的内容
+                str.delete(0,str.length());
+                i++; // 跳过‘[’
+                } else{
+                    num = num*10 + Character.getNumericValue(arrs[i]);
+                }
+            } else if(arrs[i] == ']'){
+                String temp = str.toString();
+                str.delete(0,str.length());
+                int count = counts.pop();
+                //先连接栈顶字符串
+                str.append(subs.pop());
+                //再连接括号内的字符串
+                for(int j = 0 ; j < count ; j++)
+                    str.append(temp);
+            } else{
+                str.append(arrs[i]);
+            }
+        }
+        return str.toString();
+    }
+}
+```
+<h3 id="4">岛屿数量</h3>
+给定一个由 '1'（陆地）和 '0'（水）组成的的二维网格，计算岛屿的数量。一个岛被水包围，并且它是通过水平方向或垂直方向上相邻的陆地连接而成的。你可以假设网格的四个边均被水包围。
+
+示例 1:
+
+输入:
+11110
+11010
+11000
+00000
+
+输出: 1
+示例 2:
+
+输入:
+11000
+11000
+00100
+00011
+
+输出: 3
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/number-of-islands
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+```Java
+//线性遍历，碰到1就开始向四周深度搜索，把访问过的1变成0 复杂度O(n2)
+class Solution {
+    public int numIslands(char[][] grid) {
+        int res = 0;
+        int len1 = grid.length;
+        if(len1 == 0) return 0;
+        int len2 = grid[0].length;
+        if(len2 == 0) return 0;
+        for(int i = 0; i < len1 ; i++){
+            for(int j = 0 ; j < len2 ; j++){
+                if(grid[i][j] == '1'){
+                    res+=1;
+                    dfs(grid,i-1,j);
+                    dfs(grid,i+1,j);
+                    dfs(grid,i,j+1);
+                    dfs(grid,i,j-1);
+                }
+            }
+        }
+        return res;
+    }
+    private void dfs(char[][] grid,int i,int j){
+        if(i<0||i>grid.length-1||j<0||j>grid[0].length-1) return;
+        if(grid[i][j] == '0') return;
+        if(grid[i][j] == '1'){
+            grid[i][j] = '0';
+            dfs(grid,i-1,j);
+            dfs(grid,i+1,j);
+            dfs(grid,i,j+1);
+            dfs(grid,i,j-1);
+        }
+    }
+}
+```
