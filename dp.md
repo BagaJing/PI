@@ -6,6 +6,10 @@
 [最长上升子序列](#3)
 
 [硬币兑换(自下向上)](#4)
+
+[最大正方形](#5)
+
+[完全平方数](#6)
 <h3 id="1">预测玩家(DP)</h3>
 给定一个表示分数的非负整数数组。 玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
 
@@ -226,4 +230,87 @@ class Solution {
     }
 }
 ```
-<h3 id="5"></h3>
+<h3 id="5">最大正方形</h3>
+在一个由 0 和 1 组成的二维矩阵内，找到只包含 1 的最大正方形，并返回其面积。
+
+示例:
+
+输入: 
+
+```
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+```
+输出: 4
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximal-square
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+```Java
+class Solution {
+    public int maximalSquare(char[][] matrix) {
+        int len1 = matrix.length;
+        if(len1 == 0) return 0;
+        int len2 = matrix[0].length;
+        if(len2 == 0) return 0;
+        int[][] dp = new int[len1+1][len2+1];
+        int res = 0;
+        for(int i = 1 ; i <= len1 ; i++){
+            for(int j = 1 ; j <= len2 ; j++){
+                if(matrix[i-1][j-1] == '1'){
+                    dp[i][j] = Math.min(dp[i-1][j-1],Math.min(dp[i][j-1],dp[i-1][j]))+1;
+                    res = Math.max(res,dp[i][j]);
+                }
+            }
+        }
+        return res*res;
+        
+    }
+}
+```
+<h3 id ="6">完全平方数</h3>
+给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+
+示例 1:
+
+输入: n = 12
+输出: 3 
+解释: 12 = 4 + 4 + 4.
+示例 2:
+
+输入: n = 13
+输出: 2
+解释: 13 = 4 + 9.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/perfect-squares
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+和找零问题差不多，都是从1开始计数记到n，根据n前面的最优解，得到当前的最优解
+[硬币兑换](#4)
+```Java
+class Solution {
+    //和找零问题解法一致
+    public int numSquares(int n) {
+        int max = (int)Math.sqrt(n);
+        int[] nums = new int[max];
+        for(int i = 0 ; i < nums.length ; i++)
+            nums[i] = (i+1)*(i+1);
+          //dp[0]空出来
+        int[] dp = new int[n+1];
+        Arrays.fill(dp,n+1);
+        dp[0] = 0;
+        for(int i = 1 ; i < dp.length ; i++){
+            for(int x : nums){
+                if(x <= i){
+                    dp[i] = Math.min(dp[i],dp[i-x]+1);
+                }
+            }
+        }
+        return dp[n] > n ? -1 : dp[n];
+    }
+}
+
+```
