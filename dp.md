@@ -10,6 +10,8 @@
 [最大正方形](#5)
 
 [完全平方数](#6)
+
+[乘积最大子序列](#7)
 <h3 id="1">预测玩家(DP)</h3>
 给定一个表示分数的非负整数数组。 玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
 
@@ -313,4 +315,60 @@ class Solution {
     }
 }
 
+```
+<h3 id="7">乘积最大子序列</h3>
+给定一个整数数组 nums ，找出一个序列中乘积最大的连续子序列（该序列至少包含一个数）。
+
+示例 1:
+
+输入: [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+示例 2:
+
+输入: [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/maximum-product-subarray
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+```Java
+class Solution {
+    public int maxProduct(int[] nums){
+        //令imax为当前最大值，则当前最大值为 imax = max(imax * nums[i], nums[i])
+        //由于数组中有负值存在，当前最大乘以负值就变成当前最小，当前最小反之。因此需要一个当前最小值imax,当出现负值时与imax互换
+        int max = Integer.MIN_VALUE, imax = 1, imin = 1;
+        for(int i = 0 ; i < nums.length ; i++){
+            if(nums[i] < 0){
+                //当nums[i]小于零时，当前的最大值和最小值先互换 再计算
+                int tmp = imax;
+                imax = imin;
+                imin = tmp;
+            }
+            imax = Math.max(imax*nums[i],nums[i]);
+            imin = Math.min(imin*nums[i],nums[i]);
+            max = Math.max(max,imax);
+        }
+        return max;
+    }
+    /* 暴力
+    public int maxProduct(int[] nums) {
+        int len = nums.length;
+        if(len == 0) return 0;
+        if(len == 1) return nums[0];
+        int res = Integer.MIN_VALUE;
+        int[] dp = new int[len];
+        for(int i = 0 ; i <len ; i++){
+            for(int j = i; j < len ; j++){
+                if(j==i) dp[j] = nums[j];
+                if(j > i) dp[j] = nums[j]*dp[j-1];
+                //System.out.println(res+" "+dp[i][j]);
+                res = Math.max(res,dp[j]);
+            }
+        }
+        return res;
+    }
+    */
+}
 ```
