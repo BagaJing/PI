@@ -26,7 +26,7 @@ class TrieNode{
     private char nodeVal;
     private boolean isEnd;
     public TrieNode(){
-        //26个字母, 1个Trie节点有26个叉
+        //26个字母, 1个Trie节点有26个叉	
         this.childNodes = new TrieNode[26];
         this.isEnd = false;
     }
