@@ -1,6 +1,8 @@
 # Array
 ###  Index
 [使数组唯一的最小增量](#1)
+
+[寻找重复数](#5)
 #### * 回溯
 [组合总和](#2)
 
@@ -128,6 +130,45 @@ class Solution {
             }
         }
         return res;
+    }
+    */
+}
+```
+<h3 id="5">寻找重复数</h3>
+[题目链接](https://leetcode-cn.com/problems/find-the-duplicate-number/)
+```Java
+class Solution {
+    //tricky
+    public int findDuplicate(int[] nums){
+        int rabit = nums[0];
+        int tortoise = nums[0];
+        do{
+            tortoise = nums[tortoise];
+            rabit = nums[nums[rabit]];
+           // System.out.println("tortoise "+tortoise+" rabbit "+rabit);
+        }while(rabit!=tortoise);
+        
+        
+        int ptr1 = nums[0];
+        int ptr2 = tortoise;
+        while(ptr1 != ptr2){
+            ptr1 = nums[ptr1];
+            ptr2 = nums[ptr2];
+        }
+        return ptr1;
+        
+    }
+    // space: O(n) time:O(n)
+    /*
+    //集合
+    public int findDuplicate(int[] nums) {
+        int n = nums.length - 1;
+        int[] seq = new int[n+1];
+        for(int x : nums){
+            seq[x] += 1;
+            if(seq[x] >= 2 ) return x;
+        }
+        return -1;
     }
     */
 }

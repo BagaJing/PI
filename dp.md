@@ -20,6 +20,12 @@
 [买卖股票的最佳时机 IV](#11)
 [最佳买卖股票时机含冷冻期](#12)
 
+#### *单词拆分问题
+
+[单词拆分](#13)
+[单词拆分II](#14)
+
+[回文子串](#15)
 
 <h3 id="1">预测玩家(DP)</h3>
 给定一个表示分数的非负整数数组。 玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
@@ -596,6 +602,141 @@ class Solution {
             dp_pre_0 = temp;
         }
         return dp_0;
+    }
+}
+```
+<h3 id = "13">单词拆分</h3>
+给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+说明：
+
+拆分时可以重复使用字典中的单词。
+你可以假设字典中没有重复的单词。
+示例 1：
+
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+示例 2：
+
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     注意你可以重复使用字典中的单词。
+示例 3：
+
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/word-break
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+```Java
+class Solution {
+	//官方题解
+    //状态表达式:  dp[i] = dp[j] && cotains(s.substring(j,i))
+     public boolean wordBreak(String s, List<String> wordDict){
+         int len = s.length();
+         boolean[] dp = new boolean[len+1];
+         dp[0] = true;
+         for(int i = 1 ; i <= len ; i++){
+             for(int j = 0; j < i ; j++){
+                 if(dp[j]&&wordDict.contains(s.substring(j,i))){
+                     dp[i] = true;
+                     //break;
+                 }
+             }
+         }
+         return dp[len];
+     }
+    //用例超时
+    /*
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int len = s.length();
+        boolean stat = false;
+        Stack<Integer> matched = new Stack<>();
+        matched.push(0);
+        while(!matched.isEmpty()){
+            int start = matched.pop();
+            int end = start+ 1;
+            while(end <= len){
+                stat = wordDict.contains(s.substring(start,end));
+                if(stat) {
+                if(end == len) return true;    
+                matched.push(end);}
+                end += 1;
+            }
+            //System.out.println(matched);
+        }
+        return stat;
+    }
+    */
+    
+}
+```
+<h3 id="14">单词拆分II</h3>
+[题目链接](https://leetcode-cn.com/problems/word-break-ii/)
+上道题的基础上加上回溯
+```Java
+class Solution {
+    //动态判断是否含有,回溯遍历所有可能
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        List<String> res = new ArrayList<>();
+        int len = s.length();
+        //dp
+        boolean[] dp = new boolean[len+1];
+        dp[0] = true;
+        for(int i = 1 ; i <= len ; i++){
+            for(int j = 0 ; j < i ; j++){
+                if(dp[j]&&wordDict.contains(s.substring(j,i))) dp[i] = true;
+            }
+        }
+        //System.out.println(Arrays.toString(dp));
+        //trace back
+        if(dp[len]){
+            trace(res,new String(),s,0,wordDict);
+        }
+        return res;
+    }
+    private void trace(List<String> res,String unit,String s,int index,List<String> wordDict){
+        if(index == s.length()){
+            res.add(new String(unit).trim());
+            return;
+        }
+                for(int i = index+1; i <= s.length() ; i++){
+                    if(wordDict.contains(s.substring(index,i))){
+                        String temp = s.substring(index,i);
+                        trace(res,unit+temp+" ",s,i,wordDict);
+                    }
+                }
+            
+        
+    }
+}
+```
+<h3 id="15">回文子串</h3>
+[题目链接](https://leetcode-cn.com/problems/palindromic-substrings/submissions/)
+```Java
+class Solution {
+    //看了很久 终于找到了个能看懂的例子 试着写出动态方程
+    //判断i到j是否构成回文子串 = i和j所在位置的字符相等 && (i到j的子串长度小于等于3 或者里层的子串，即i+1到j-1构成的子串为回文子串)  
+    //boolean dp[i][j] = (char[i] == char[j]) && ((j - i <= 2)||dp[i+1][j-1]==true) 动态方程
+    public int countSubstrings(String s) {
+        int n = s.length();
+        boolean[][] dp = new boolean[n][n];
+        int res = 0;
+        for(int i = n-1; i >= 0 ; i--){
+            //因为需要知道提前dp[i+1][j-1]的值，所以i从尾到头遍历，j从i到尾遍历
+            for(int j = i ; j < n ; j++){
+                if((s.charAt(i) == s.charAt(j))&&
+                ((j-i)<=2||dp[i+1][j-1])
+                ){
+                    dp[i][j] = true;
+                    res+=1;
+                }
+            }
+        }
+        return res;
     }
 }
 ```

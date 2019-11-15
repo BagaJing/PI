@@ -3,6 +3,9 @@
 * [2 字典序排数(DFS)](#2)
 * [字符串解码(栈)](#3)
 * [岛屿数量](#4)
+#### * 单词搜索
+[单词搜索](#5)
+[单词搜索 II](#6)
 <h3 id="1"> 1. 钥匙和房间(DFS)</h3>
 有 N 个房间，开始时你位于 0 号房间。每个房间有不同的号码：0，1，2，...，N-1，并且房间里可能有一些钥匙能使你进入下一个房间。
 
@@ -212,6 +215,47 @@ class Solution {
             dfs(grid,i,j+1);
             dfs(grid,i,j-1);
         }
+    }
+}
+```
+<h3 id = "5">单词搜素</h3>
+[题目链接](https://leetcode-cn.com/problems/word-search/)
+```Java
+class Solution {
+    // 深度优先 + 回溯
+    public boolean exist(char[][] board, String word) {
+        int len1 = board.length;
+        if(len1 == 0) return false;
+        int len2 = board[0].length;
+        if(len2 == 0) return false;
+        boolean res = false;
+        for(int i = 0 ; i < len1 ; i++){
+            for(int j = 0; j < len2 ; j++){
+                //找到单词的头，然后进行深度优先搜索
+                if(board[i][j] == word.charAt(0)){
+                    res = res||dfs(board,word,0,i,j);
+                }
+            }
+        }
+        return res;
+    }
+    private boolean dfs(char[][] board,String word,int index,int i,int j){
+        //出口
+        if(i > board.length-1|| i < 0 || j > board[0].length-1||j <0||index>=word.length()) return false;
+        if(board[i][j] == '#') return false;
+        if(board[i][j] != word.charAt(index)) return false;
+        if(index == word.length()-1) return true;
+        //mark走过的路径
+        char tmp = board[i][j];
+        board[i][j] = '#';
+        //dfs
+        boolean res = dfs(board,word,index+1,i+1,j)||
+            dfs(board,word,index+1,i-1,j)||
+            dfs(board,word,index+1,i,j+1)||
+            dfs(board,word,index+1,i,j-1);
+        //还原
+        board[i][j] = tmp;
+        return res;
     }
 }
 ```
