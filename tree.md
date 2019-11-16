@@ -3,6 +3,9 @@
 [从前序与中序遍历序列构造二叉树](#2)
 
 [从中序与后序遍历序列构造二叉树](#3)
+
+#### * 遍历
+[二叉树的层级遍历（BFS）](#4)
 <h3 id="1">二叉树的最近公共祖先</h3>
 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
 
@@ -175,6 +178,57 @@ class Solution {
         root.right = build(inorder,mid+1,in_end,postorder,pos_end-range,pos_end-1,map);
         root.left = build(inorder,in_start,mid-1,postorder,pos_start,pos_end-range-1,map);
         return root;
+    }
+}
+```
+
+<h3 id = "4">二叉树的层级遍历</h3>
+
+[题目链接](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/submissions/)
+
+```Java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    //BFS
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res = new LinkedList<>();
+        if(root == null) return res;
+        //双队列 轮换存储下一层的节点
+        Deque<TreeNode> stack_1 = new LinkedList<>();
+        List<Integer> unit = new LinkedList<>();
+        Deque<TreeNode> stack_2 = new LinkedList<>();
+        boolean isFirst = true;
+        stack_1.push(root);
+        while(!stack_1.isEmpty()||!stack_2.isEmpty()){
+            if(isFirst){
+                while(!stack_1.isEmpty()){
+                    TreeNode node = stack_1.removeLast();
+                    unit.add(node.val);
+                    if(node.left!=null) stack_2.addFirst(node.left);
+                    if(node.right!=null) stack_2.addFirst(node.right);
+                }
+                isFirst = false;
+            }else{
+                    while(!stack_2.isEmpty()){
+                    TreeNode node = stack_2.removeLast();
+                    unit.add(node.val);
+                    if(node.left!=null) stack_1.addFirst(node.left);
+                    if(node.right!=null) stack_1.addFirst(node.right);
+                    }
+                isFirst = true;
+            }
+            res.add(new LinkedList<>(unit));
+            unit.clear();
+        }
+        return res;
     }
 }
 ```

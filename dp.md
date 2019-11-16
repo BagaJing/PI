@@ -23,9 +23,12 @@
 #### *单词拆分问题
 
 [单词拆分](#13)
+
 [单词拆分II](#14)
 
 [回文子串](#15)
+
+[每日温度](#16)
 
 <h3 id="1">预测玩家(DP)</h3>
 给定一个表示分数的非负整数数组。 玩家1从数组任意一端拿取一个分数，随后玩家2继续从剩余数组任意一端拿取分数，然后玩家1拿，……。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
@@ -675,8 +678,11 @@ class Solution {
 }
 ```
 <h3 id="14">单词拆分II</h3>
+
 [题目链接](https://leetcode-cn.com/problems/word-break-ii/)
+
 上道题的基础上加上回溯
+
 ```Java
 class Solution {
     //动态判断是否含有,回溯遍历所有可能
@@ -715,7 +721,7 @@ class Solution {
 }
 ```
 <h3 id="15">回文子串</h3>
-[题目链接](https://leetcode-cn.com/problems/palindromic-substrings/submissions/)
+[题目链接]()
 ```Java
 class Solution {
     //看了很久 终于找到了个能看懂的例子 试着写出动态方程
@@ -740,7 +746,37 @@ class Solution {
     }
 }
 ```
+<h3 id="16">每日温度</h3>
 
+[题目连接](https://leetcode-cn.com/problems/daily-temperatures/submissions/)
+
+[题解](https://leetcode-cn.com/problems/daily-temperatures/solution/jie-ti-si-lu-by-pulsaryu/)
+
+```Java
+class Solution {
+    public int[] dailyTemperatures(int[] T) {
+        int len = T.length;
+        int[] res = new int[len];
+        //外层倒序遍历，为了能提前知道res[j]的结果
+        for(int i = len - 2 ; i >=0 ; i--){
+            //里层正序遍历，根据res[j]的值进行跳转，避免重复遍历,因为i到j间的值肯定小于i的值
+            //res[i] = T[j] > T[i] ? j -1 else res[j] == 0? 0
+            for(int j = i+1 ; j < len ; j += res[j]){
+                if(T[j] > T[i]){
+                    res[i] = j - i;
+                    break;
+                //说明之后的值都小于j,break避免死循环
+                } else if(res[j] == 0){
+                    res[i] = 0;
+                    break;
+                }
+            }
+        }
+        return res;
+
+    }
+}
+```
 
 
 
