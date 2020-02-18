@@ -2,6 +2,9 @@
 * [LRU缓存 (哈希表+设计)](#1)
 * [复制带随即指针的链表](#2)
 * [和为k的子数组](#3)
+* [347.前 K 个高频元素](#4)
+* [288. 单词的唯一缩写](#单词的唯一缩写)
+* [380. 常数时间插入、删除和获取随机元素](#常数时间插入、删除和获取随机元素)
 <h3 id="1">1.LRU缓存 (哈希表 设计)</h3>
 
 Saturday, 02. November 2019 12:32PM 
@@ -248,4 +251,218 @@ class Solution {
         return count;
     }
 }
+```
+<h3 id="4">前 K 个高频元素</h3>
+给定一个非空的整数数组，返回其中出现频率前 k 高的元素。
+
+示例 1:
+
+输入: nums = [1,1,1,2,2,3], k = 2
+输出: [1,2]
+示例 2:
+
+输入: nums = [1], k = 1
+输出: [1]
+说明：
+
+你可以假设给定的 k 总是合理的，且 1 ≤ k ≤ 数组中不相同的元素的个数。
+你的算法的时间复杂度必须优于 O(n log n) , n 是数组的大小。
+```Java
+// 347 
+// 利用优先队列与重载compare函数
+class Solution {
+    class Pair{
+        int key;
+        int value;
+        public Pair(Integer key, Integer value){
+            this.key = key;
+            this.value = value;
+        }
+        public Integer getKey(){
+            return this.key;
+        }
+        public Integer getValue(){
+            return this.value;
+        }
+    }
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        Map<Integer,Integer> map = new HashMap<>();
+        for(Integer i : nums)
+            map.put(i,map.getOrDefault(i,0)+1);
+        PriorityQueue<Pair> heap = new PriorityQueue<>(new Comparator<Pair>(){
+            @Override
+            public int compare(Pair o1,Pair o2){
+                return o1.getValue() - o2.getValue();
+            }
+        });
+        Set<Integer> set = map.keySet();
+        for(Integer i : set){
+            heap.add(new Pair(i,map.get(i)));
+            if(heap.size() > k) heap.poll();
+        }
+        List<Integer> res = new ArrayList<>();
+        for(Pair pair : heap){
+            res.add(pair.getKey());
+        }
+        return res;
+    }
+}
+```
+<h3 id ="单词的唯一缩写">288.单词的唯一缩写</h3>
+一个单词的缩写需要遵循 <起始字母><中间字母数><结尾字母> 这样的格式。
+
+以下是一些单词缩写的范例：
+```
+
+a) it                      --> it    (没有缩写)
+
+     1
+     ↓
+b) d|o|g                   --> d1g
+
+              1    1  1
+     1---5----0----5--8
+     ↓   ↓    ↓    ↓  ↓    
+c) i|nternationalizatio|n  --> i18n
+
+              1
+     1---5----0
+     ↓   ↓    ↓
+d) l|ocalizatio|n          --> l10n
+```
+假设你有一个字典和一个单词，请你判断该单词的缩写在这本字典中是否唯一。若单词的缩写在字典中没有任何 其他 单词与其缩写相同，则被称为单词的唯一缩写。
+
+示例：
+
+给定 dictionary = [ "deer", "door", "cake", "card" ]
+
+isUnique("dear") -> false
+isUnique("cart") -> true
+isUnique("cane") -> false
+isUnique("make") -> true
+```Java
+class ValidWordAbbr {
+    private Map<String,Set<String>> map;
+    public ValidWordAbbr(String[] dictionary) {
+        map = new HashMap<>();
+        for(String str : dictionary){
+            String abbr = abbr(str);
+            if(map.containsKey(abbr))
+                map.get(abbr).add(str);
+            else{
+                Set<String> set = new HashSet<>();
+                set.add(str);
+                map.put(abbr,set);
+            }
+        }
+        
+    }
+    
+    public boolean isUnique(String word) {
+        String abbr = abbr(word);
+        if(map.containsKey(abbr)){
+          Set<String> set = map.get(abbr);
+            if(set.contains(word))
+                return set.size() == 1;
+            else 
+                return false;
+        } else return true;
+    }
+    
+    public String abbr(String str){
+        if(str.length()<=2) return str;
+        return str.substring(0,1)+String.valueOf(str.length()-2)+str.substring(str.length()-1);
+    }
+}
+
+/**
+ * Your ValidWordAbbr object will be instantiated and called as such:
+ * ValidWordAbbr obj = new ValidWordAbbr(dictionary);
+ * boolean param_1 = obj.isUnique(word);
+ */
+```
+<h3 id ="常数时间插入、删除和获取随机元素">380.常数时间插入、删除和获取随机元素</h3>
+设计一个支持在平均 时间复杂度 O(1) 下，执行以下操作的数据结构。
+
+insert(val)：当元素 val 不存在时，向集合中插入该项。
+remove(val)：元素 val 存在时，从集合中移除该项。
+getRandom：随机返回现有集合中的一项。每个元素应该有相同的概率被返回。
+示例 :
+
+// 初始化一个空的集合。
+RandomizedSet randomSet = new RandomizedSet();
+
+// 向集合中插入 1 。返回 true 表示 1 被成功地插入。
+randomSet.insert(1);
+
+// 返回 false ，表示集合中不存在 2 。
+randomSet.remove(2);
+
+// 向集合中插入 2 。返回 true 。集合现在包含 [1,2] 。
+randomSet.insert(2);
+
+// getRandom 应随机返回 1 或 2 。
+randomSet.getRandom();
+
+// 从集合中移除 1 ，返回 true 。集合现在包含 [2] 。
+randomSet.remove(1);
+
+// 2 已在集合中，所以返回 false 。
+randomSet.insert(2);
+
+// 由于 2 是集合中唯一的数字，getRandom 总是返回 2 。
+randomSet.getRandom();
+```Java
+class RandomizedSet {
+        //val   index
+    Map<Integer,Integer> map;
+        //val
+    List<Integer> list;
+    Random rand;
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        map = new HashMap<>();
+        list = new ArrayList<>();
+        rand = new Random();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        if(map.containsKey(val)) return false;
+        
+        map.put(val,list.size());
+        list.add(val);
+        //list.add(list.size(),val);
+        
+        //System.out.println(list);
+        //System.out.println(map);
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        if(!map.containsKey(val)) return false;
+        int idx = map.get(val);
+        int last = list.get(list.size()-1);
+        list.set(idx,last);
+        list.remove(list.size()-1);
+        map.put(last,idx);
+        map.remove(val);
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        return list.get(rand.nextInt(list.size()));
+        
+    }
+}
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet obj = new RandomizedSet();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
 ```
