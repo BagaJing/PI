@@ -13,7 +13,7 @@ class Solution {
                 iter = (iter+k)%len;
                 rotated++;
                 if(rotated == nums.length) break;
-            }while(iter!=start);
+            }while(iter!=start); //如果下一个坐标等于起始点则跳出循环，更新起始点,避免环
             start++;
         }
     }
