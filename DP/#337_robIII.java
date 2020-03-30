@@ -13,7 +13,7 @@ class Solution {
         return Math.max(res[0],res[1]);
         //return robMax_1(root,true);
     }
-    //1494ms 5% 暴力递归 每层递归两次,抢递归一次，不抢递归一次 总共递归N的平方次
+    //1494ms 5% 暴力递归 每个节点两次,抢递归一次，不抢递归一次 总共递归N的平方次
     public int robMax_1(TreeNode root,boolean canRob){
         if(root == null) return 0;
         int rob = 0, notRob = 0;
